@@ -2,9 +2,14 @@
 
 "use strict";
 
-const FS = require ('fs');
+const FS = require ('fs'),
+     DATASTORE = require('nedb'),
+     DB = new DATASTORE({ filename: 'data/log_db.json', autoload: true });
 
 class DataHandler {
+	constructor() {
+          this.data = [];
+	}
 
      static handleUserData(data, whichAjax) {
           data = JSON.parse(data);
@@ -49,6 +54,10 @@ class DataHandler {
                }
           }
           return user;
+     }
+
+     addData(data) {
+          DB.insert(data);
      }
 }
 

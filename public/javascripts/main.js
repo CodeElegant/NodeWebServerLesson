@@ -1,9 +1,4 @@
-/**
- *   @author Bates, Howard (bates4e@gmail.com)
- *   @version 0.0.1
- *   @summary Main || created: 03.17.2017
- *   @todo
- */
+//  @todo
 
 "use strict";
 

@@ -7,5 +7,10 @@
     "start": "node bin/server"
   },
   "author": "Howard Bates",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "latest",
+    "formidable": "latest",
+    "nedb": "latest"
+  }
 }
