@@ -5,18 +5,18 @@
 const DATA_HANDLER = require('./node/DataHandler');
 
 class app {
-	constructor() {
+     constructor() {
           this.ejsData = null;
           this.user = null;
-		this.loadServer();
-	}
-	
-	loadServer() {
-		const HTTP = require('http');
-		const PORT = 8005;
+          this.loadServer();
+     }
+
+     loadServer() {
+          const HTTP = require('http');
+          const PORT = 8005;
           const EJS = require('ejs');
-		
-		HTTP.createServer((request, response) => {
+
+          HTTP.createServer((request, response) => {
 
                let httpHandler = (error, string, contentType) => {
                     if (error) {
@@ -26,7 +26,6 @@ class app {
                          response.writeHead(200, {'Content-Type': contentType});
                          response.end(string, 'utf-8');
                     } else if (contentType.indexOf('html') >= 0) {
-                         console.log(`Rendering EJS`);
                          response.writeHead(200, {'Content-Type': contentType});
                          response.end(EJS.render(string, {
                               data: this.ejsData,
@@ -38,20 +37,36 @@ class app {
                     }
                };
 
-			if (request.url.indexOf('.css') >= 0) {
-				this.render(request.url.slice(1), 'text/css', httpHandler, 'utf-8');
-			} else if (request.url.indexOf('.js') >= 0) {
-                   this.render(request.url.slice(1), 'application/javascript', httpHandler, 'utf-8');
+               if (request.method === 'POST') {
+                    if (request.headers['x-requested-with'] === 'XMLHttpRequest0') {
+                         request.on('data', (data) => {
+                              this.user = DATA_HANDLER.handleUserData(data.toString('utf8'), 'XMLHttpRequest0');
+                              if (this.user !== 'false') {
+                                   response.writeHead(200, {'content-type': 'application/json'});
+                                   response.end(this.user);
+                              } else {
+                                   response.writeHead(200, {'content-type': 'text/plain'});
+                                   response.end('false');
+                              }
+                         });
+                    } else {
+                         response.writeHead(405, "Method not supported", {'Content-Type': 'text/html'});
+                         response.end('<html><head><title>405 - Method not supported</title></head><body><h1>Method not supported.</h1></body></html>');
+                    }
+               } else if (request.url.indexOf('.css') >= 0) {
+                    this.render(request.url.slice(1), 'text/css', httpHandler, 'utf-8');
+               } else if (request.url.indexOf('.js') >= 0) {
+                    this.render(request.url.slice(1), 'application/javascript', httpHandler, 'utf-8');
                } else if (request.url.indexOf('.png') >= 0) {
-                        this.render(request.url.slice(1), 'image/png', httpHandler, 'binary');
-			} else if (request.url.indexOf('/') >= 0) {
-				this.render('public/views/index.ejs', 'text/html', httpHandler, 'utf-8');
-			} else {
-				this.render(`HEY! What you're looking for: It's not here!`, 'text/html', httpHandler, 'utf-8');
-			}
-			
-		}).listen(PORT);
-	}
+                    this.render(request.url.slice(1), 'image/png', httpHandler, 'binary');
+               } else if (request.url.indexOf('/') >= 0) {
+                    this.render('public/views/index.ejs', 'text/html', httpHandler, 'utf-8');
+               } else {
+                    this.render(`HEY! What you're looking for: It's not here!`, 'text/html', httpHandler, 'utf-8');
+               }
+
+          }).listen(PORT);
+     }
 
      render(path, contentType, callback, encoding) {
           const FS = require('fs');
