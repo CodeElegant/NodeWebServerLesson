@@ -6,7 +6,6 @@ class main {
      constructor() {
           main.prepApp();
           new EventHandler();
-          this.user = [];
      }
 
      static prepApp() {
@@ -32,11 +31,11 @@ class EventHandler {
                          if (response === 'false') {
                               alert('You must provide your proper email address to continue.');
                          } else {
-                              this.user = JSON.parse(response);
+                              let user = JSON.parse(response);
                               document.getElementById('login').style.display = 'none';
                               document.getElementById('result').style.display = 'none';
                               document.getElementById('log').style.display = 'block';
-                              document.getElementById('name').innerHTML = `${this.user.firstName} ${this.user.lastName}`;
+                              document.getElementById('name').innerHTML = `${user.firstName} ${user.lastName}`;
                          }
                     });
                }

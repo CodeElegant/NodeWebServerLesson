@@ -40,33 +40,39 @@ class app {
                if (request.method === 'POST') {
                     if (request.headers['x-requested-with'] === 'XMLHttpRequest0') {
                          request.on('data', (data) => {
-                              DATA_HANDLER.handleUserData(data.toString('utf8'), 'XMLHttpRequest0', (user) => {
-                                   if (user !== 'false') {
-                                        response.writeHead(200, {'content-type': 'application/json'});
-                                        // response.end(JSON.stringify(user));
-                                        response.end(user);
-                                   } else {
-                                        response.writeHead(200, {'content-type': 'text/plain'});
-                                        response.end('false');
-                                   }
-                              });
+                              this.user = DATA_HANDLER.handleUserData(data.toString('utf8'), 'XMLHttpRequest0');
+                              if (this.user !== 'false') {
+                                   response.writeHead(200, {'content-type': 'application/json'});
+                                   response.end(this.user);
+                              } else {
+                                   response.writeHead(200, {'content-type': 'text/plain'});
+                                   response.end('false');
+                              }
                          });
                     } else {
                          response.writeHead(405, "Method not supported", {'Content-Type': 'text/html'});
                          response.end('<html><head><title>405 - Method not supported</title></head><body><h1>Method not supported.</h1></body></html>');
                     }
                } else if (request.url.indexOf('.css') >= 0) {
-                    DATA_HANDLER.renderDom(request.url.slice(1), 'text/css', httpHandler, 'utf-8');
+                    this.render(request.url.slice(1), 'text/css', httpHandler, 'utf-8');
                } else if (request.url.indexOf('.js') >= 0) {
-                    DATA_HANDLER.renderDom(request.url.slice(1), 'application/javascript', httpHandler, 'utf-8');
+                    this.render(request.url.slice(1), 'application/javascript', httpHandler, 'utf-8');
                } else if (request.url.indexOf('.png') >= 0) {
-                    DATA_HANDLER.renderDom(request.url.slice(1), 'image/png', httpHandler, 'binary');
+                    this.render(request.url.slice(1), 'image/png', httpHandler, 'binary');
                } else if (request.url.indexOf('/') >= 0) {
-                    DATA_HANDLER.renderDom('public/views/index.ejs', 'text/html', httpHandler, 'utf-8');
+                    this.render('public/views/index.ejs', 'text/html', httpHandler, 'utf-8');
                } else {
-                    DATA_HANDLER.renderDom(`HEY! What you're looking for: It's not here!`, 'text/html', httpHandler, 'utf-8');
+                    this.render(`HEY! What you're looking for: It's not here!`, 'text/html', httpHandler, 'utf-8');
                }
+
           }).listen(PORT);
+     }
+
+     render(path, contentType, callback, encoding) {
+          const FS = require('fs');
+          FS.readFile(path, encoding ? encoding : 'utf-8', (error, string) => {
+               callback(error, string, contentType);
+          });
      }
 }
 
