@@ -20,6 +20,7 @@ class EventHandler {
           this.handleContinue();
           this.handleEnterLog();
           this.handleNewLog();
+          this.user = null;
      }
 
      handleContinue() {
@@ -31,11 +32,11 @@ class EventHandler {
                          if (response === 'false') {
                               alert('You must provide your proper email address to continue.');
                          } else {
-                              let user = JSON.parse(response);
+                              this.user = JSON.parse(response);
                               document.getElementById('login').style.display = 'none';
                               document.getElementById('result').style.display = 'none';
                               document.getElementById('log').style.display = 'block';
-                              document.getElementById('name').innerHTML = `${user.firstName} ${user.lastName}`;
+                              document.getElementById('name').innerHTML = `${this.user.firstName} ${this.user.lastName}`;
                          }
                     });
                }
@@ -46,7 +47,7 @@ class EventHandler {
           document.getElementById('enterLog').addEventListener('click', () => {
                let gameHits = Number(document.getElementById('gameHits').value);
                let gameRuns = Number(document.getElementById('gameRuns').value);
-               if (gameHits > 0 && gameHits < 99 && hameRuns > 0 && gameRuns < 99) {
+               if (gameHits > 0 && gameHits < 99 && gameRuns > 0 && gameRuns < 99) {
                     document.getElementById('log').style.display = 'none';
                     document.getElementById('login').style.display = 'none';
                     document.getElementById('result').style.display = 'block';

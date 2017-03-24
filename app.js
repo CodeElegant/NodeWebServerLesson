@@ -40,16 +40,28 @@ class app {
                if (request.method === 'POST') {
                     if (request.headers['x-requested-with'] === 'XMLHttpRequest0') {
                          request.on('data', (data) => {
-                              DATA_HANDLER.handleUserData(data.toString('utf8'), 'XMLHttpRequest0', (user) => {
+                              DATA_HANDLER.handleUserData(data.toString('utf8'), (user) => {
                                    if (user !== 'false') {
                                         response.writeHead(200, {'content-type': 'application/json'});
-                                        // response.end(JSON.stringify(user));
                                         response.end(user);
                                    } else {
                                         response.writeHead(200, {'content-type': 'text/plain'});
                                         response.end('false');
                                    }
                               });
+                         });
+                    } else if (request.headers['x-requested-with'] === 'XMLHttpRequest1') {
+                         const FORMIDABLE = require('formidable');
+                         let formData = {};
+                         new FORMIDABLE.IncomingForm().parse(request).on('field', (field, name) => {
+                              formData[field] = name;
+                         }).on('error', (err) => {
+                              next(err);
+                         }).on('end', () => {
+                              DATA_HANDLER.addData(formData);
+                              formData = JSON.stringify(formData);
+                              response.writeHead(200, {'content-type': 'application/json'});
+                              response.end(formData);
                          });
                     } else {
                          response.writeHead(405, "Method not supported", {'Content-Type': 'text/html'});

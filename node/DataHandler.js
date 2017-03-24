@@ -3,6 +3,8 @@
 "use strict";
 
 const FS = require('fs');
+const DATASTORE = require('nedb');
+const DB = new DATASTORE({ filename: 'data/log_db.json', autoload: true });
 
 class DataHandler {
      constructor() {
@@ -15,7 +17,7 @@ class DataHandler {
           });
      }
 
-     static handleUserData(data, ajaxType, callback) {
+     static handleUserData(data, callback) {
           data = JSON.parse(data);
           const FILE_PATH = 'data/users.csv';
           FS.readFile(FILE_PATH, 'utf8', (err, file) => {
@@ -41,6 +43,10 @@ class DataHandler {
                }
                callback(user);
           });
+     }
+
+     static addData(data) {
+          DB.insert(data);
      }
 }
 
